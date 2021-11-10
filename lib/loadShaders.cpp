@@ -1,103 +1,88 @@
-//  Preluat si adaptat dupa http://www.opengl-tutorial.org/beginners-tutorials 
+#include "loadShaders.h"
 
- 
-#include <vector>
-#include <iostream>
 #include <string>
+#include <iostream>
 #include <fstream>
-#include <GL/glew.h>
-#include <GL/freeglut.h>
+#include <vector>
+#include <algorithm>
 
-using namespace std;
+std::string readFile(const char *filePath) {
+    std::string content;
+    std::ifstream fileStream(filePath, std::ios::in);
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-
-GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path){
- 
-    // Creaza shadere
-    GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-    GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
- 
-    // Citeste din fisier shader-ul de varf
-    std::string VertexShaderCode;
-    std::ifstream VertexShaderStream(vertex_file_path, std::ios::in);
-    if(VertexShaderStream.is_open())
-    {
-        std::string Line = "";
-        while(getline(VertexShaderStream, Line))
-            VertexShaderCode += "\n" + Line;
-        VertexShaderStream.close();
+    if(!fileStream.is_open()) {
+        std::cerr << "Could not read file " << filePath << ". File does not exist." << std::endl;
+        return "";
     }
- 
-    // Citeste din fisier shader-ul de fragment
-    std::string FragmentShaderCode;
-    std::ifstream FragmentShaderStream(fragment_file_path, std::ios::in);
-    if(FragmentShaderStream.is_open()){
-        std::string Line = "";
-        while(getline(FragmentShaderStream, Line))
-            FragmentShaderCode += "\n" + Line;
-        FragmentShaderStream.close();
+
+    std::string line = "";
+    while(!fileStream.eof()) {
+        std::getline(fileStream, line);
+        content.append(line + "\n");
     }
- 
-    GLint Result = GL_FALSE;
-    int InfoLogLength;
- 
-    // Compileaza shader-ul de varf
-    printf("Compilare shader : %s\n", vertex_file_path);
-    char const * VertexSourcePointer = VertexShaderCode.c_str();
-    glShaderSource(VertexShaderID, 1, &VertexSourcePointer , NULL);
-    glCompileShader(VertexShaderID);
- 
-   /*
-   // Verifica
-    glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
-    glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-    std::vector<char> VertexShaderErrorMessage(InfoLogLength);
-    glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
-    fprintf(stdout, "%s\n", &VertexShaderErrorMessage[0]);
-	*/
- 
-    // Compileaza shader-ul de fragemnt
-    printf("Compilare shader : %s\n", fragment_file_path);
-    char const * FragmentSourcePointer = FragmentShaderCode.c_str();
-    glShaderSource(FragmentShaderID, 1, &FragmentSourcePointer , NULL);
-    glCompileShader(FragmentShaderID);
- /*
- 
-    // Verifica
-    glGetShaderiv(FragmentShaderID, GL_COMPILE_STATUS, &Result);
-    glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-    std::vector<char> FragmentShaderErrorMessage(InfoLogLength);
-    glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
-    fprintf(stdout, "%s\n", &FragmentShaderErrorMessage[0]);
- */
-    // Leaga programul
-    fprintf(stdout, "Legare program\n");
-    GLuint ProgramID = glCreateProgram();
-    glAttachShader(ProgramID, VertexShaderID);
-    glAttachShader(ProgramID, FragmentShaderID);
-    glLinkProgram(ProgramID);
- /*
-    // Verifica
-    glGetProgramiv(ProgramID, GL_LINK_STATUS, &Result);
-    glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-    std::vector<char> ProgramErrorMessage( max(InfoLogLength, int(1)) );
-    glGetProgramInfoLog(ProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
-    fprintf(stdout, "%s\n", &ProgramErrorMessage[0]);
- */
-    glDeleteShader(VertexShaderID);
-    glDeleteShader(FragmentShaderID);
- 
-	glUseProgram(0);
 
-  glDetachShader(ProgramID, VertexShaderID);
-  glDetachShader(ProgramID, FragmentShaderID);
-
-  glDeleteShader(FragmentShaderID);
-  glDeleteShader(VertexShaderID);
-
-    return ProgramID;
+    fileStream.close();
+    return content;
 }
+
+
+GLuint LoadShaders(const char *vertex_path, const char *fragment_path) {
+    GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
+    GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+    // Read shaders
+
+    std::string vertShaderStr = readFile(vertex_path);
+    std::string fragShaderStr = readFile(fragment_path);
+    const char *vertShaderSrc = vertShaderStr.c_str();
+    const char *fragShaderSrc = fragShaderStr.c_str();
+
+    GLint result = GL_FALSE;
+    int logLength;
+
+    // Compile vertex shader
+
+    std::cout << "Compiling vertex shader." << std::endl;
+    glShaderSource(vertShader, 1, &vertShaderSrc, NULL);
+    glCompileShader(vertShader);
+
+    // Check vertex shader
+
+    glGetShaderiv(vertShader, GL_COMPILE_STATUS, &result);
+    glGetShaderiv(vertShader, GL_INFO_LOG_LENGTH, &logLength);
+    std::vector<char> vertShaderError((logLength > 1) ? logLength : 1);
+    glGetShaderInfoLog(vertShader, logLength, NULL, &vertShaderError[0]);
+    std::cout << &vertShaderError[0] << std::endl;
+
+    // Compile fragment shader
+
+    std::cout << "Compiling fragment shader." << std::endl;
+    glShaderSource(fragShader, 1, &fragShaderSrc, NULL);
+    glCompileShader(fragShader);
+
+    // Check fragment shader
+
+    glGetShaderiv(fragShader, GL_COMPILE_STATUS, &result);
+    glGetShaderiv(fragShader, GL_INFO_LOG_LENGTH, &logLength);
+    std::vector<char> fragShaderError((logLength > 1) ? logLength : 1);
+    glGetShaderInfoLog(fragShader, logLength, NULL, &fragShaderError[0]);
+    std::cout << &fragShaderError[0] << std::endl;
+
+    std::cout << "Linking program" << std::endl;
+    GLuint program = glCreateProgram();
+    glAttachShader(program, vertShader);
+    glAttachShader(program, fragShader);
+    glLinkProgram(program);
+
+    glGetProgramiv(program, GL_LINK_STATUS, &result);
+    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
+    std::vector<char> programError( (logLength > 1) ? logLength : 1 );
+    glGetProgramInfoLog(program, logLength, NULL, &programError[0]);
+    std::cout << &programError[0] << std::endl;
+
+    glDeleteShader(vertShader);
+    glDeleteShader(fragShader);
+
+    return program;
+}
+
