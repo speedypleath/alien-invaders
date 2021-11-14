@@ -3,13 +3,12 @@
 
 class VBO {
 private:
-    GLfloat *Vertices;
-    GLuint VaoId;
-    GLuint VerticesBufferId;
-    GLuint ColorBufferId;
+    const void *vertices;
+    GLuint vaoId;
+    GLuint verticesBufferId;
 public:
-    VBO();
+    VBO(const void* vertices);
     ~VBO();
-    void bind();
-    void unbind();
+    void bind() const;
+    void unbind() const;
 };

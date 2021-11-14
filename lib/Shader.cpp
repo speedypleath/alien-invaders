@@ -108,3 +108,11 @@ void Shader::setMat4(const char *name, glm::mat4 value) const {
     unsigned int location = glGetUniformLocation(program, name);
     GLCall(glUniformMatrix4fv(location, 1, GL_FALSE, &value[0][0]));
 }
+
+void Shader::bind() const {
+    GLCall(glUseProgram(program));
+}
+
+void Shader::unbind() const {
+    GLCall(glUseProgram(0));
+}

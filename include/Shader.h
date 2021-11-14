@@ -15,5 +15,6 @@ public:
     void setInt(const std::string &name, int value) const;
     void setFloat(const std::string &name, float value) const;
     void setMat4(const char *name, glm::mat4 value) const;
-    inline GLuint getProgram() const { return program; }
+    void bind() const;
+    void unbind() const;
 };
