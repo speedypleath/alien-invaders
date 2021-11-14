@@ -2,6 +2,10 @@
 #include <GL/glew.h>
 #include <signal.h>
 
+
+#define PI 3.14159265358979323846
+#define HEIGHT 350
+#define WIDTH  500
 #define ASSERT(x) if (!(x)) raise(SIGTRAP);
 #define GLCall(x) GLClearError();\
     x;\
