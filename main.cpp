@@ -46,27 +46,20 @@ void CreateVBO(void)
     // varfurile 
     GLfloat Vertices[] = {
         // player vertices
-        450.0f,  75.0f, 0.0f, 1.0f,
-        550.0f, 75.0f, 0.0f, 1.0f,
-        550.0f,  105.0f, 0.0f, 1.0f,
-        450.0f,  105.0f, 0.0f, 1.0f,
+        450.0f,  75.0f, 0.0f, 1.0f,     1.0f, 1.0f, 1.0f,
+        550.0f, 75.0f, 0.0f, 1.0f,      1.0f, 1.0f, 1.0f,
+        550.0f,  105.0f, 0.0f, 1.0f,    1.0f, 1.0f, 1.0f,
+        450.0f,  105.0f, 0.0f, 1.0f,    1.0f, 1.0f, 1.0f,
 
-        460.0f,  105.0f, 0.0f, 1.0f,
-        460.0f,  115.0f, 0.0f, 1.0f,
-        540.0f,  115.0f, 0.0f, 1.0f,
-        540.0f,  105.0f, 0.0f, 1.0f,
+        460.0f,  105.0f, 0.0f, 1.0f,    1.0f, 1.0f, 1.0f,
+        460.0f,  115.0f, 0.0f, 1.0f,    1.0f, 1.0f, 1.0f, 
+        540.0f,  115.0f, 0.0f, 1.0f,    1.0f, 1.0f, 1.0f, 
+        540.0f,  105.0f, 0.0f, 1.0f,    1.0f, 1.0f, 1.0f,
 
-        490.0f,  115.0f, 0.0f, 1.0f,
-        490.0f,  130.0f, 0.0f, 1.0f,
-        510.0f,  130.0f, 0.0f, 1.0f,
-        510.0f,  115.0f, 0.0f, 1.0f,
-    };
-
-    GLfloat Colors[] = {
-        1.0f, 0.0f, 0.0f, 1.0f,
-        0.0f, 1.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f, 1.0f,
-        0.5f, 0.0f, 0.5f, 1.0f,
+        490.0f,  115.0f, 0.0f, 1.0f,    1.0f, 1.0f, 1.0f,
+        490.0f,  130.0f, 0.0f, 1.0f,    1.0f, 1.0f, 1.0f,
+        510.0f,  130.0f, 0.0f, 1.0f,    1.0f, 1.0f, 1.0f,
+        510.0f,  115.0f, 0.0f, 1.0f,    1.0f, 1.0f, 1.0f,
     };
  
     GLuint Indices[] = {
@@ -78,33 +71,30 @@ void CreateVBO(void)
         8, 10, 11,
     };
 
-        // se creeaza un buffer nou pentru varfuri
     GLCall(glGenBuffers(1, &VerticesBufferId));
-    // buffer pentru indici
     GLCall(glGenBuffers(1, &IndicesBufferId));
-    // se creeaza / se leaga un VAO (Vertex Array Object)
+    // VAO (Vertex Array Object)
     GLCall(glGenVertexArrays(1, &VaoId));
  
-    // legare VAO
+    // bind VAO
     GLCall(glBindVertexArray(VaoId));
 
-    // buffer-ul este setat ca buffer curent
+    // vertices buffer
     GLCall(glBindBuffer(GL_ARRAY_BUFFER, VerticesBufferId));
+    GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW));
 
-    // buffer-ul va contine atat coordonatele varfurilor, cat si datele de culoare
-    GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(Colors) + sizeof(Vertices), NULL, GL_STATIC_DRAW));
-    GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertices), Vertices));
-    GLCall(glBufferSubData(GL_ARRAY_BUFFER, sizeof(Vertices), sizeof(Colors), Colors));
-
-    // buffer-ul pentru indici
+    // indices buffer
 	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndicesBufferId));
 	GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices, GL_STATIC_DRAW));
  
-    // se activeaza lucrul cu atribute; atributul 0 = pozitie, atributul 1 = culoare, acestea sunt indicate corect in VBO
-    GLCall(glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, NULL));
-    GLCall(glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)sizeof(Vertices)));
+    // se activeaza lucrul cu atribute; atributul 0 = pozitie
     GLCall(glEnableVertexAttribArray(0));
+    GLCall(glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), (GLvoid*)0));
+
+    // se activeaza lucrul cu atribute; atributul 1 = culoare
     GLCall(glEnableVertexAttribArray(1));
+    GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), (GLvoid*)(4 * sizeof(GLfloat))));
+ 
  }
 void DestroyVBO(void)
 {
