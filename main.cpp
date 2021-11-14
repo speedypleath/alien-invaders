@@ -13,8 +13,6 @@
 
 using namespace std;
 
-Shader shader;
-
 GLuint
     VaoId,
     VerticesBufferId,
@@ -122,18 +120,11 @@ void DestroyVBO(void)
     GLCall(glDeleteVertexArrays(1, &VaoId));
 }
 
-void CreateShaders(void)
-{
-
-    ProgramId = shader.loadShaders("res/04_03_Shader.vert", "res/04_03_Shader.frag");
-    GLCall(glUseProgram(ProgramId));
-}
-
  
-void DestroyShaders(void)
-{
-    GLCall(glDeleteProgram(ProgramId));
-}
+// void DestroyShaders(void)
+// {
+//     GLCall(glDeleteProgram(ProgramId));
+// }
 
 void ProcessNormalKeys(unsigned char key, int x, int y)
 {
@@ -168,11 +159,11 @@ void ProcessSpecialKeys(int key, int x, int y) {
 void Initialize(void)
 {
     GLCall(glClearColor(0.0f, 0.0f, 0.0f, 0.0f)); // culoarea de fond a ecranului
-    CreateShaders();
     CreateVBO();
 }
 void RenderPlayer(void)
 {
+    Shader shader = Shader("res/04_03_Shader.vert", "res/04_03_Shader.frag");
     myMatrix = glm::mat4(1.0f);
 	resizeMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.f/width, 1.f/height, 1.0));
     scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 1.0));
@@ -191,7 +182,6 @@ void RenderPlayer(void)
 }
 void Cleanup(void)
 {
-    DestroyShaders();
     DestroyVBO();
 }
 
