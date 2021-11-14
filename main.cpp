@@ -9,6 +9,7 @@
 #include <IndexBuffer.h>
 #include <errorHandle.h>
 #include <Player.h>
+#include <Bullet.h>
 #include "glm/glm.hpp"  
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/transform.hpp"
@@ -17,7 +18,7 @@
 using namespace std;
 
 Player *player;
-
+Bullet *bullet;
 void ProcessNormalKeys(unsigned char key, int x, int y)
 {
     player->rotate(key);
@@ -29,11 +30,13 @@ void ProcessSpecialKeys(int key, int x, int y) {
 void Initialize(void)
 {
     player = new Player();
+    // bullet = new Bullet(0,0,0,0);
 }
 
 void Render(void)
 {
     player->draw();
+    // bullet->draw();
     GLCall(glutSwapBuffers());
     GLCall(glFlush());
 }

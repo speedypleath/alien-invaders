@@ -65,6 +65,9 @@ Player::~Player(){
 }
 
 void Player::draw(){
+    shader->bind();
+    ibo->bind();
+    vbo->bind();
     glm::mat4 resizeMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.f/WIDTH, 1.f/HEIGHT, 1.0));
     glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 1.0));
     glm::mat4 translatePlayerMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(x, 0.0, 0.0));
