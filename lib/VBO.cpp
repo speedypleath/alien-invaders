@@ -1,10 +1,10 @@
 #include <VBO.h>
 #include <errorHandle.h>
 
-VBO::VBO(const void *vertices) : vertices(vertices){
+VBO::VBO(const void *vertices, unsigned int size) : vertices(vertices){
     GLCall(glGenBuffers(1, &verticesBufferId));
     GLCall(glBindBuffer(GL_ARRAY_BUFFER, verticesBufferId));
-    GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW));
+    GLCall(glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW));
 }
     
 VBO::~VBO(){

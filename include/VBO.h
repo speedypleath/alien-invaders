@@ -7,7 +7,7 @@ private:
     GLuint vaoId;
     GLuint verticesBufferId;
 public:
-    VBO(const void* vertices);
+    VBO(const void* vertices, unsigned int size);
     ~VBO();
     void bind() const;
     void unbind() const;
