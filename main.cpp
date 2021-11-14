@@ -71,11 +71,8 @@ int playerX = 0;
 
 void CreateVBO(void)
 {
-    // VAO (Vertex Array Object)
-    GLCall(glGenVertexArrays(1, &VaoId));
-    // bind VAO
-    GLCall(glBindVertexArray(VaoId));
- }
+
+}
 void DestroyVBO(void)
 {
     GLCall(glDisableVertexAttribArray(1));
@@ -119,37 +116,35 @@ void ProcessSpecialKeys(int key, int x, int y) {
  
 void Initialize(void)
 {
-    shader = new Shader("res/simple_shader.vert", "res/simple_shader.frag");
-    GLCall(glClearColor(0.0f, 0.0f, 0.0f, 0.0f)); // culoarea de fond a ecranului
-    CreateVBO();
-}
-void RenderPlayer(void)
-{
+    GLCall(glGenVertexArrays(1, &VaoId));
+    GLCall(glBindVertexArray(VaoId));
     indicesBuffer = new IndexBuffer(indices, sizeof(indices) / sizeof(GLuint));
-    // vbo = new VBO(vertices);
-    GLCall(glGenBuffers(1, &verticesBufferId));
-    GLCall(glBindBuffer(GL_ARRAY_BUFFER, verticesBufferId));
-    GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW));
+    vbo = new VBO(vertices, sizeof(vertices));
+    shader = new Shader("res/simple_shader.vert", "res/simple_shader.frag");
+    GLCall(glClearColor(0.0f, 0.0f, 0.0f, 0.0f));
+
     // se activeaza lucrul cu atribute; atributul 0 = pozitie
     GLCall(glEnableVertexAttribArray(0));
-    GLCall(glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), (GLvoid*)0));
+    GLCall(glVertexAttribPointer(0, 4, GL_FLOAT, GL_TRUE, 7 * sizeof(GLfloat), (GLvoid*)0));
 
     // se activeaza lucrul cu atribute; atributul 1 = culoare
     GLCall(glEnableVertexAttribArray(1));
-    GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), (GLvoid*)(4 * sizeof(GLfloat))));
+    GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 7 * sizeof(GLfloat), (GLvoid*)(4 * sizeof(GLfloat))));
+}
 
-    myMatrix = glm::mat4(1.0f);
-	resizeMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.f/width, 1.f/height, 1.0));
+void RenderPlayer(void)
+{
+    resizeMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.f/width, 1.f/height, 1.0));
     scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 1.0));
     translatePlayerMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(playerX, 0.0, 0.0));
     translateMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-width, -height, 0.0));
     translateToPlayer = glm::translate(glm::mat4(1.0f), glm::vec3(500 + playerX, 100, 0.0));
     translateToCenter = glm::translate(glm::mat4(1.0f), glm::vec3(-500 - playerX, -100, 0.0));
     rotateMatrix = glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0.0, 0.0, 1.0));
-
     GLCall(glClear(GL_COLOR_BUFFER_BIT));
-    myMatrix =  resizeMatrix * translateMatrix; // * translateToPlayer * rotateMatrix * translateToCenter * translatePlayerMatrix;
+    myMatrix =  resizeMatrix * translateMatrix * translateToPlayer * rotateMatrix * translateToCenter * translatePlayerMatrix;
     shader->setMat4("myMatrix", myMatrix);
+    glPointSize(5.0f);
     GLCall(glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, (void*)(0)));
     GLCall(glutSwapBuffers());
     GLCall(glFlush());
