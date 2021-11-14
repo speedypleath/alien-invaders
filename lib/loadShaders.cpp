@@ -6,7 +6,8 @@
 #include <vector>
 #include <algorithm>
 
-std::string readFile(const char *filePath) {
+
+std::string Shader::readFile(const char *filePath) {
     std::string content;
     std::ifstream fileStream(filePath, std::ios::in);
 
@@ -26,7 +27,7 @@ std::string readFile(const char *filePath) {
 }
 
 
-GLuint LoadShaders(const char *vertex_path, const char *fragment_path) {
+GLuint Shader::loadShaders(const char *vertex_path, const char *fragment_path) {
     GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
     GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
 
@@ -82,7 +83,24 @@ GLuint LoadShaders(const char *vertex_path, const char *fragment_path) {
 
     glDeleteShader(vertShader);
     glDeleteShader(fragShader);
-
+    this->program = program;
     return program;
 }
 
+
+Shader::Shader(){}
+Shader::~Shader(){
+    glDeleteProgram(program);
+}
+void Shader::setInt(const std::string &name, int value) const {
+    unsigned int location = glGetUniformLocation(program, name.c_str());
+    glUniform1i(location, value);
+}
+void Shader::setFloat(const std::string &name, float value) const {
+    unsigned int location = glGetUniformLocation(program, name.c_str());
+    glUniform1f(location, value);
+}
+void Shader::setMat4(const char *name, glm::mat4 value) const {
+    unsigned int location = glGetUniformLocation(program, name);
+    glUniformMatrix4fv(location, 1, GL_FALSE, &value[0][0]);
+}

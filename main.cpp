@@ -14,10 +14,13 @@
 
 using namespace std;
 
+Shader shader;
+
 GLuint
     VaoId,
-    VboId,
+    VerticesBufferId,
     ColorBufferId,
+    IndicesBufferId,
     ProgramId,
     myMatrixLocation,
     scaleMatrixLocation,
@@ -43,82 +46,89 @@ int playerX = 0;
 
 void CreateVBO(void)
 {
-  // varfurile 
-  GLfloat Vertices[] = {
-    // vertices 
-    0.0f, 0.0f, 0.0f, 1.0f,
-    1000.0f, 0.0f, 0.0f, 1.0f,
-    1000.0f, 700.0f, 0.0f, 1.0f,
-    0.0f, 700.0f, 0.0f, 1.0f,
-	// player vertices
-    450.0f,  75.0f, 0.0f, 1.0f,
-    550.0f, 75.0f, 0.0f, 1.0f,
-	550.0f,  105.0f, 0.0f, 1.0f,
-	450.0f,  105.0f, 0.0f, 1.0f,
+    // varfurile 
+    GLfloat Vertices[] = {
+        // player vertices
+        450.0f,  75.0f, 0.0f, 1.0f,
+        550.0f, 75.0f, 0.0f, 1.0f,
+        550.0f,  105.0f, 0.0f, 1.0f,
+        450.0f,  105.0f, 0.0f, 1.0f,
 
-	460.0f,  105.0f, 0.0f, 1.0f,
-    460.0f,  115.0f, 0.0f, 1.0f,
-    540.0f,  115.0f, 0.0f, 1.0f,
-    540.0f,  105.0f, 0.0f, 1.0f,
+        460.0f,  105.0f, 0.0f, 1.0f,
+        460.0f,  115.0f, 0.0f, 1.0f,
+        540.0f,  115.0f, 0.0f, 1.0f,
+        540.0f,  105.0f, 0.0f, 1.0f,
 
-    490.0f,  115.0f, 0.0f, 1.0f,
-    490.0f,  130.0f, 0.0f, 1.0f,
-    510.0f,  130.0f, 0.0f, 1.0f,
-    510.0f,  115.0f, 0.0f, 1.0f,
-  };
+        490.0f,  115.0f, 0.0f, 1.0f,
+        490.0f,  130.0f, 0.0f, 1.0f,
+        510.0f,  130.0f, 0.0f, 1.0f,
+        510.0f,  115.0f, 0.0f, 1.0f,
+    };
 
-  GLfloat Colors[] = {
-    1.0f, 0.0f, 0.0f, 1.0f,
-    0.0f, 1.0f, 0.0f, 1.0f,
-    0.0f, 0.0f, 1.0f, 1.0f,
-	0.5f, 0.0f, 0.5f, 1.0f,
-  };
+    GLfloat Colors[] = {
+        1.0f, 0.0f, 0.0f, 1.0f,
+        0.0f, 1.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f, 1.0f,
+        0.5f, 0.0f, 0.5f, 1.0f,
+    };
  
+    GLuint Indices[] = {
+        3, 2, 1,
+        0, 3, 1,
+        4, 5, 6,
+        4, 6, 7,
+        8, 9, 10,
+        8, 10, 11,
+    };
 
-  // se creeaza un buffer nou
-  glGenBuffers(1, &VboId);
-  // este setat ca buffer curent
-  glBindBuffer(GL_ARRAY_BUFFER, VboId);
-  // punctele sunt "copiate" in bufferul curent
-  glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
-  
-  // se creeaza / se leaga un VAO (Vertex Array Object) - util cand se utilizeaza mai multe VBO
-  glGenVertexArrays(1, &VaoId);
-  glBindVertexArray(VaoId);
-  // se activeaza lucrul cu atribute; atributul 0 = pozitie
-  glEnableVertexAttribArray(0);
-  // 
-  glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
+        // se creeaza un buffer nou pentru varfuri
+    glGenBuffers(1, &VerticesBufferId);
+    // buffer pentru indici
+    glGenBuffers(1, &IndicesBufferId);
+    // se creeaza / se leaga un VAO (Vertex Array Object)
+    glGenVertexArrays(1, &VaoId);
  
-  // un nou buffer, pentru culoare
-  glGenBuffers(1, &ColorBufferId);
-  glBindBuffer(GL_ARRAY_BUFFER, ColorBufferId);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(Colors), Colors, GL_STATIC_DRAW);
-  // atributul 1 =  culoare
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
+    // legare VAO
+    glBindVertexArray(VaoId);
+
+    // buffer-ul este setat ca buffer curent
+    glBindBuffer(GL_ARRAY_BUFFER, VerticesBufferId);
+
+    // buffer-ul va contine atat coordonatele varfurilor, cat si datele de culoare
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Colors) + sizeof(Vertices), NULL, GL_STATIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertices), Vertices);
+    glBufferSubData(GL_ARRAY_BUFFER, sizeof(Vertices), sizeof(Colors), Colors);
+
+    // buffer-ul pentru indici
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndicesBufferId);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices, GL_STATIC_DRAW);
+ 
+    // se activeaza lucrul cu atribute; atributul 0 = pozitie, atributul 1 = culoare, acestea sunt indicate corect in VBO
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, NULL);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)sizeof(Vertices));
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
  }
 void DestroyVBO(void)
 {
- 
-
   glDisableVertexAttribArray(1);
   glDisableVertexAttribArray(0);
 
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glDeleteBuffers(1, &ColorBufferId);
-  glDeleteBuffers(1, &VboId);
+  glDeleteBuffers(1, &VerticesBufferId);
+  glDeleteBuffers(1, &IndicesBufferId);
 
   glBindVertexArray(0);
   glDeleteVertexArrays(1, &VaoId);
-
-   
 }
 
 void CreateShaders(void)
 {
-  ProgramId=LoadShaders("res/04_03_Shader.vert", "res/04_03_Shader.frag");
-  glUseProgram(ProgramId);
+
+    ProgramId = shader.loadShaders("res/04_03_Shader.vert", "res/04_03_Shader.frag");
+    cout<<"In"<<ProgramId<<"Out"<<shader.getProgram()<<endl;
+    glUseProgram(ProgramId);
 }
 
  
@@ -173,22 +183,16 @@ void RenderPlayer(void)
     rotateMatrix = glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0.0, 0.0, 1.0));
 
     glClear(GL_COLOR_BUFFER_BIT);
-
     myMatrix =  resizeMatrix * translateMatrix * translateToPlayer * rotateMatrix * translateToCenter * translatePlayerMatrix;
-    myMatrixLocation = glGetUniformLocation(ProgramId, "myMatrix"); 
-    glUniformMatrix4fv(myMatrixLocation, 1, GL_FALSE,  &myMatrix[0][0]);
-
-    glDrawArrays(GL_POLYGON, 4, 4); 
-    glDrawArrays(GL_POLYGON, 8, 4); 
-    glDrawArrays(GL_POLYGON, 12, 4);
-
+    shader.setMat4("myMatrix", myMatrix);
+    glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, (void*)(0));
     glutSwapBuffers();
     glFlush();
 }
 void Cleanup(void)
 {
-  DestroyShaders();
-  DestroyVBO();
+    DestroyShaders();
+    DestroyVBO();
 }
 
 int main(int argc, char* argv[])
