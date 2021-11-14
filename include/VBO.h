@@ -1,5 +1,5 @@
+#pragma once
 #include <GL/glew.h>
-#include <GL/freeglut.h>
 
 class VBO {
 private:
@@ -11,7 +11,7 @@ private:
     GLuint ColorBufferId;
     GLuint IndexBufferId;
 public:
-    VBO(GFloat *Vertices, GFloat *Colors, GLuint *Indices);
+    VBO();
     ~VBO();
     void bind();
     void unbind();

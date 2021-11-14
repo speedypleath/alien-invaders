@@ -4,9 +4,8 @@
 #include <iostream>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
-
-#include "loadShaders.h"
-
+#include <Shader.h>
+#include <errorHandle.h>
 #include "glm/glm.hpp"  
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/transform.hpp"
@@ -82,59 +81,58 @@ void CreateVBO(void)
     };
 
         // se creeaza un buffer nou pentru varfuri
-    glGenBuffers(1, &VerticesBufferId);
+    GLCall(glGenBuffers(1, &VerticesBufferId));
     // buffer pentru indici
-    glGenBuffers(1, &IndicesBufferId);
+    GLCall(glGenBuffers(1, &IndicesBufferId));
     // se creeaza / se leaga un VAO (Vertex Array Object)
-    glGenVertexArrays(1, &VaoId);
+    GLCall(glGenVertexArrays(1, &VaoId));
  
     // legare VAO
-    glBindVertexArray(VaoId);
+    GLCall(glBindVertexArray(VaoId));
 
     // buffer-ul este setat ca buffer curent
-    glBindBuffer(GL_ARRAY_BUFFER, VerticesBufferId);
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, VerticesBufferId));
 
     // buffer-ul va contine atat coordonatele varfurilor, cat si datele de culoare
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Colors) + sizeof(Vertices), NULL, GL_STATIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertices), Vertices);
-    glBufferSubData(GL_ARRAY_BUFFER, sizeof(Vertices), sizeof(Colors), Colors);
+    GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(Colors) + sizeof(Vertices), NULL, GL_STATIC_DRAW));
+    GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertices), Vertices));
+    GLCall(glBufferSubData(GL_ARRAY_BUFFER, sizeof(Vertices), sizeof(Colors), Colors));
 
     // buffer-ul pentru indici
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndicesBufferId);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices, GL_STATIC_DRAW);
+	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndicesBufferId));
+	GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices, GL_STATIC_DRAW));
  
     // se activeaza lucrul cu atribute; atributul 0 = pozitie, atributul 1 = culoare, acestea sunt indicate corect in VBO
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, NULL);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)sizeof(Vertices));
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
+    GLCall(glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, NULL));
+    GLCall(glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)sizeof(Vertices)));
+    GLCall(glEnableVertexAttribArray(0));
+    GLCall(glEnableVertexAttribArray(1));
  }
 void DestroyVBO(void)
 {
-  glDisableVertexAttribArray(1);
-  glDisableVertexAttribArray(0);
+    GLCall(glDisableVertexAttribArray(1));
+    GLCall(glDisableVertexAttribArray(0));
 
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glDeleteBuffers(1, &ColorBufferId);
-  glDeleteBuffers(1, &VerticesBufferId);
-  glDeleteBuffers(1, &IndicesBufferId);
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
+    GLCall(glDeleteBuffers(1, &ColorBufferId));
+    GLCall(glDeleteBuffers(1, &VerticesBufferId));
+    GLCall(glDeleteBuffers(1, &IndicesBufferId));
 
-  glBindVertexArray(0);
-  glDeleteVertexArrays(1, &VaoId);
+    GLCall(glBindVertexArray(0));
+    GLCall(glDeleteVertexArrays(1, &VaoId));
 }
 
 void CreateShaders(void)
 {
 
     ProgramId = shader.loadShaders("res/04_03_Shader.vert", "res/04_03_Shader.frag");
-    cout<<"In"<<ProgramId<<"Out"<<shader.getProgram()<<endl;
-    glUseProgram(ProgramId);
+    GLCall(glUseProgram(ProgramId));
 }
 
  
 void DestroyShaders(void)
 {
-    glDeleteProgram(ProgramId);
+    GLCall(glDeleteProgram(ProgramId));
 }
 
 void ProcessNormalKeys(unsigned char key, int x, int y)
@@ -144,9 +142,11 @@ void ProcessNormalKeys(unsigned char key, int x, int y)
 			break;
         case 'a' :
             rotation += rotation <= PI/8 ? PI/16 : 0;
+            cout<<"rotation: "<<rotation<<endl;
             break;
         case 'd' :
             rotation -= rotation >= -PI/8 ? PI/16 : 0;
+            cout<<"rotation: "<<rotation<<endl;
             break;
 	}
     if (key == 27)
@@ -167,7 +167,7 @@ void ProcessSpecialKeys(int key, int x, int y) {
  
 void Initialize(void)
 {
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // culoarea de fond a ecranului
+    GLCall(glClearColor(0.0f, 0.0f, 0.0f, 0.0f)); // culoarea de fond a ecranului
     CreateShaders();
     CreateVBO();
 }
@@ -182,12 +182,12 @@ void RenderPlayer(void)
     translateToCenter = glm::translate(glm::mat4(1.0f), glm::vec3(-500 - playerX, -100, 0.0));
     rotateMatrix = glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0.0, 0.0, 1.0));
 
-    glClear(GL_COLOR_BUFFER_BIT);
+    GLCall(glClear(GL_COLOR_BUFFER_BIT));
     myMatrix =  resizeMatrix * translateMatrix * translateToPlayer * rotateMatrix * translateToCenter * translatePlayerMatrix;
     shader.setMat4("myMatrix", myMatrix);
-    glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, (void*)(0));
-    glutSwapBuffers();
-    glFlush();
+    GLCall(glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, (void*)(0)));
+    GLCall(glutSwapBuffers());
+    GLCall(glFlush());
 }
 void Cleanup(void)
 {
@@ -197,18 +197,18 @@ void Cleanup(void)
 
 int main(int argc, char* argv[])
 {
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_SINGLE|GLUT_RGB);
-    glutInitWindowPosition (100,100); 
-    glutInitWindowSize(1000,700); 
-    glutCreateWindow("Alien Invaders"); 
-    glewInit(); 
+    GLCall(glutInit(&argc, argv));
+    GLCall(glutInitDisplayMode(GLUT_SINGLE|GLUT_RGB));
+    GLCall(glutInitWindowPosition (100,100)); 
+    GLCall(glutInitWindowSize(1000,700)); 
+    GLCall(glutCreateWindow("Alien Invaders")); 
+    GLCall(glewInit()); 
     Initialize();
-    glutDisplayFunc(RenderPlayer);
-    glutIdleFunc(RenderPlayer);
-    glutKeyboardFunc(ProcessNormalKeys);
-    glutSpecialFunc(ProcessSpecialKeys);
-    glutCloseFunc(Cleanup);
-    glutMainLoop();
+    GLCall(glutDisplayFunc(RenderPlayer));
+    GLCall(glutIdleFunc(RenderPlayer));
+    GLCall(glutKeyboardFunc(ProcessNormalKeys));
+    GLCall(glutSpecialFunc(ProcessSpecialKeys));
+    GLCall(glutCloseFunc(Cleanup));
+    GLCall(glutMainLoop());
     return 0;
 }

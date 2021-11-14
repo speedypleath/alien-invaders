@@ -1,7 +1,8 @@
 #pragma once
 #include "GL/glew.h"
 #include <string>
-#include "glm/glm.hpp"  
+#include "glm/glm.hpp"
+  
 class Shader
 {
 private:

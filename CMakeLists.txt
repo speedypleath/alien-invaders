@@ -4,8 +4,9 @@ project(AlienInvaders VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-
-add_library(LoadShaders lib/loadShaders.cpp)
+include_directories(${CMAKE_SOURCE_DIR}/include)
+file(GLOB SOURCES "lib/*.cpp")
+add_library(lib STATIC ${SOURCES})
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLUT REQUIRED)
@@ -18,7 +19,7 @@ include_directories( ${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIRS}  ${GLEW_INCLUD
 
 add_executable(AlienInvaders main.cpp)
 
-target_link_libraries(AlienInvaders ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} LoadShaders)
+target_link_libraries(AlienInvaders ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} lib)
 
 add_custom_target(CopyShaders ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory 
