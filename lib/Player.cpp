@@ -35,33 +35,18 @@ Player::Player(){
         510.0f,  115.0f, 0.0f, 1.0f,    1.0f, 1.0f, 1.0f,
     };
 
-    glGenVertexArrays(1, &vao);
- 
-    // legare VAO
-    glBindVertexArray(vao);
-
+    vao = new VAO();
     ibo = new IndexBuffer(indices, sizeof(indices) / sizeof(GLuint));
     vbo = new VBO(vertices, sizeof(vertices));
     shader = new Shader("res/simple_shader.vert", "res/simple_shader.frag");
-
-    GLCall(glEnableVertexAttribArray(0));
-    GLCall(glVertexAttribPointer(0, 4, GL_FLOAT, GL_TRUE, 7 * sizeof(GLfloat), (GLvoid*)0));
-
-    GLCall(glEnableVertexAttribArray(1));
-    GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 7 * sizeof(GLfloat), (GLvoid*)(4 * sizeof(GLfloat))));
+    vao->addBuffer(*vbo);
 }
 
 Player::~Player(){
     delete ibo;
     delete vbo;
     delete shader;
-    GLCall(glDisableVertexAttribArray(1));
-    GLCall(glDisableVertexAttribArray(0));
-
-    GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
-
-    GLCall(glBindVertexArray(0));
-    GLCall(glDeleteVertexArrays(1, &vao));
+    delete vao;
 }
 
 void Player::draw(){
