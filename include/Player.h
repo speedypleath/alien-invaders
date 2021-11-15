@@ -4,7 +4,8 @@
 #include "VAO.h"
 #include "IndexBuffer.h"
 #include "glm/glm.hpp"  
-
+#include <BulletManager.h>
+#include <vector>
 class Player
 {
 private:
@@ -14,11 +15,13 @@ private:
     IndexBuffer *ibo;
     glm::mat4 position;
     float x, rotation;
+    BulletManager *bullets;
 public:
     Player();
     ~Player();
     void draw();
     void move(int key);
     void rotate(unsigned char key);
-    void shoot();
+    inline float getPosition(){return x;}
+    inline float getRotation(){return rotation;}
 };

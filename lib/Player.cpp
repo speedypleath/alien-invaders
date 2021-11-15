@@ -4,6 +4,7 @@
 #include <GL/freeglut.h>
 #include <iostream>
 #include <errorHandle.h>
+#include <Bullet.h>
 
 using namespace std;
 
@@ -53,6 +54,7 @@ void Player::draw(){
     shader->bind();
     ibo->bind();
     vbo->bind();
+    vao->bind();
     glm::mat4 resizeMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.f/WIDTH, 1.f/HEIGHT, 1.0));
     glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 1.0));
     glm::mat4 translatePlayerMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(x, 0.0, 0.0));
@@ -60,10 +62,11 @@ void Player::draw(){
     glm::mat4 translateToPlayer = glm::translate(glm::mat4(1.0f), glm::vec3(500 + x, 100, 0.0));
     glm::mat4 translateToCenter = glm::translate(glm::mat4(1.0f), glm::vec3(-500 - x, -100, 0.0));
     glm::mat4 rotateMatrix = glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0.0, 0.0, 1.0));
-    GLCall(glClear(GL_COLOR_BUFFER_BIT));
+
     glm::mat4 myMatrix =  resizeMatrix * translateMatrix * translateToPlayer * rotateMatrix * translateToCenter * translatePlayerMatrix;
     shader->setMat4("myMatrix", myMatrix);
     GLCall(glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, (void*)(0)));
+
 }
 
 void Player::move(int key){
@@ -81,8 +84,6 @@ void Player::move(int key){
 
 void Player::rotate(unsigned char key){
     switch (key) {
-		case ' ' :
-			break;
         case 'a' :
             rotation += rotation <= PI/8 ? PI/16 : 0;
             cout<<"rotation: "<<rotation<<endl;
@@ -95,8 +96,3 @@ void Player::rotate(unsigned char key){
     if (key == 27)
         exit(0);
 }
-
-void Player::shoot(){
-
-}
-

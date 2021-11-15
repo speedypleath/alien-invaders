@@ -20,8 +20,9 @@ void VAO::bind(){
 void VAO::unbind(){
     GLCall(glBindVertexArray(0));
 }
-void VAO::addBuffer(const VBO& vbo){
+void VAO::addBuffer(VBO& vbo){
     vbo.bind();
+    vbo.setVAO(vao);
     GLCall(glEnableVertexAttribArray(0));
     GLCall(glVertexAttribPointer(0, 4, GL_FLOAT, GL_TRUE, 7 * sizeof(GLfloat), (GLvoid*)0));
 

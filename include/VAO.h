@@ -1,3 +1,4 @@
+#pragma once
 #include <VBO.h>
 #include <GL/glew.h>
 
@@ -9,5 +10,5 @@ public:
     ~VAO();
     void bind();
     void unbind();
-    void addBuffer(const VBO& vbo);
+    void addBuffer(VBO& vbo);
 };

@@ -11,4 +11,5 @@ public:
     ~VBO();
     void bind() const;
     void unbind() const;
+    inline void setVAO(GLuint vao) { this->vaoId = vao; }
 };

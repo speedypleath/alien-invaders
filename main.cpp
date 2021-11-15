@@ -10,18 +10,25 @@
 #include <errorHandle.h>
 #include <Player.h>
 #include <Bullet.h>
+#include <BulletManager.h>
 #include "glm/glm.hpp"  
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
 using namespace std;
-
 Player *player;
 Bullet *bullet;
+Shader *bulletShader;
+VAO *bulletVAO;
+// BulletManager *bulletManager;
+
 void ProcessNormalKeys(unsigned char key, int x, int y)
 {
-    player->rotate(key);
+    // if(key == ' ')
+    //     bulletManager->shoot(player->getPosition(), player->getRotation());
+    // else
+        player->rotate(key);
 }
 void ProcessSpecialKeys(int key, int x, int y) {
     player->move(key);
@@ -30,13 +37,23 @@ void ProcessSpecialKeys(int key, int x, int y) {
 void Initialize(void)
 {
     player = new Player();
-    // bullet = new Bullet(0,0,0,0);
+    bulletShader = new Shader("res/simple_shader.vert", "res/simple_shader.frag");
+    bulletVAO = new VAO();
+    bullet = new Bullet(30, 30, 0.1, PI/2, bulletVAO, bulletShader);
+    VBO bulletVBO = bullet->getVBO();
+    bulletVAO->addBuffer(bulletVBO);
+    player->draw();
+    // bulletManager->draw();
 }
 
 void Render(void)
 {
+    GLCall(glClear(GL_COLOR_BUFFER_BIT));
     player->draw();
-    // bullet->draw();
+    bullet->draw();
+    bullet->update();
+    // bulletManager->draw();
+    // bulletManager->update();
     GLCall(glutSwapBuffers());
     GLCall(glFlush());
 }

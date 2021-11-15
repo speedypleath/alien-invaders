@@ -1,40 +1,46 @@
 #include <Bullet.h>
 #include <errorHandle.h>
 #include "glm/gtc/matrix_transform.hpp"
+#include <math.h>
 
-Bullet::Bullet(float x, float y, int speed, float direction) : x(x), y(y), speed(speed), direction(direction) {
+Bullet::Bullet(GLfloat x, GLfloat y, float speed, float direction, VAO *vao, Shader *shader) : x(x), y(y), speed(speed), direction(direction), shader(shader), vao(vao) {
     GLfloat vertices [] = {
-        x, y, 0.0f, 0.0f,                   1.0f, 1.0f, 1.0f,
-        x + 5.0f, y + 5.0f, 0.0f, 0.0f,     1.0f, 1.0f, 1.0f,
+        x,  y, 0.0f, 1.0f,                                                               1.0f, 1.0f, 1.0f,
+        x + 35.0f * cos(direction), y + 35.0f * sin(direction), 0.0f, 1.0f,              1.0f, 1.0f, 1.0f,
     };
+    GLuint indices [] = {
+        0, 1
+    };
+    ibo = new IndexBuffer(indices, sizeof(indices) / sizeof(GLuint));
     vbo = new VBO(vertices, sizeof(vertices));
-    // shader = new Shader("res/simple_shader.vert", "res/simple_shader.frag");
-
-    GLCall(glEnableVertexAttribArray(0));
-    GLCall(glVertexAttribPointer(0, 4, GL_FLOAT, GL_TRUE, 7 * sizeof(GLfloat), (GLvoid*)0));
-
-    GLCall(glEnableVertexAttribArray(1));
-    GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 7 * sizeof(GLfloat), (GLvoid*)(4 * sizeof(GLfloat))));
+    vao->addBuffer(*vbo);
 }
 
 Bullet::~Bullet(){
-    delete vbo;
-    delete shader;
+
 }
 void Bullet::draw(){
+    shader->bind();
+    ibo->bind();
+    vbo->bind();
+    vao->bind();
     glm::mat4 resizeMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.f/WIDTH, 1.f/HEIGHT, 1.0));
     glm::mat4 translateMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-WIDTH, -HEIGHT, 0.0));
-
-    GLCall(glClear(GL_COLOR_BUFFER_BIT));
-    glm::mat4 myMatrix =  resizeMatrix * translateMatrix;
+    glm::mat4 moveMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0));
+    glm::mat4 myMatrix =  resizeMatrix * translateMatrix * moveMatrix;
     shader->setMat4("myMatrix", myMatrix);
     GLCall(glLineWidth(5.0f));
-    GLCall(glDrawArrays(GL_LINES, 0, 2));
-    if (x < 0 || x > 2 * WIDTH) {
-        delete this;
-    }
+    GLCall(glDrawElements(GL_LINE_STRIP, 2, GL_UNSIGNED_INT, (void*)(0)));
+}
 
-    if (y < 0 || y > 2 * HEIGHT) {
-        delete this;
+bool Bullet::update(){
+    x += speed * cos(direction);
+    y += speed * sin(direction);
+    if (x < 0 || x > 2 * WIDTH) {
+        return false;
     }
+    if (y < 0 || y > 2 * HEIGHT) {
+        return false;
+    }
+    return true;
 }
