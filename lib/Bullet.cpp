@@ -34,15 +34,20 @@ void Bullet::draw(){
 }
 
 bool Bullet::update(){
-    x += speed * cos(direction);
-    y += speed * sin(direction);
     if (x < 0 || x > 2 * WIDTH) {
         return false;
     }
     if (y < 0 || y > 2 * HEIGHT) {
         return false;
     }
+    x += 0.1 * cos(direction);
+    y += 0.1 * sin(direction);
     return true;
+}
+
+void Bullet::setPosition(GLfloat x){
+    this->x = (x + WIDTH)/2; 
+    this->y = 50.0f;
 }
 
 void Bullet::setDirection(float direction){

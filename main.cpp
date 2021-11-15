@@ -26,9 +26,7 @@ BulletManager *bulletManager;
 void ProcessNormalKeys(unsigned char key, int x, int y)
 {
     if(key == ' '){
-        bullet->setDirection(PI/2 + player->getRotation());
-        bullet->setX(player->getPosition());
-        bulletManager->addBullet(bullet);
+        bulletManager->shoot(player->getPosition(), PI/2 + player->getRotation());
     }
     else
         player->rotate(key);
@@ -40,11 +38,6 @@ void ProcessSpecialKeys(int key, int x, int y) {
 void Initialize(void)
 {
     player = new Player();
-    bulletShader = new Shader("res/simple_shader.vert", "res/simple_shader.frag");
-    bulletVAO = new VAO();
-    bullet = new Bullet(WIDTH, 50.0f, 0.1, PI/2, bulletVAO, bulletShader);
-    VBO bulletVBO = bullet->getVBO();
-    bulletVAO->addBuffer(bulletVBO);
     bulletManager = new BulletManager();
     player->draw();
     bulletManager->draw();

@@ -25,6 +25,6 @@ public:
     inline VBO getVBO(){return *vbo;}
     inline GLfloat getX(){return x;}
     inline GLfloat getY(){return y;}
-    inline void setX(GLfloat x){this->x = x;}
+    void setPosition(GLfloat x);
     void setDirection(float direction);
 };

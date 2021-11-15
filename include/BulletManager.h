@@ -10,16 +10,14 @@ private:
     std::vector<Bullet*> bullets;
     Shader *bulletShader;
     VAO *bulletVAO;
+    int currentBullet;
 public:
     BulletManager();
     ~BulletManager();
 
     void update();
     void draw();
-
-    void addBullet(Bullet* bullet);
-    void removeBullet(int bullet);
-    void removeAllBullets();
+    void addBullet(Bullet *bullet);
     void shoot(float position, float direction);
     void shoot(float position, float direction, VAO *vao, Shader *shader);
 
