@@ -44,3 +44,17 @@ bool Bullet::update(){
     }
     return true;
 }
+
+void Bullet::setDirection(float direction){
+    this->direction = direction;
+    vao->bind();
+    shader->bind();
+    ibo->bind();
+    delete vbo;
+    GLfloat vertices [] = {
+        x,  y, 0.0f, 1.0f,                                                               1.0f, 1.0f, 1.0f,
+        x + 35.0f * cos(direction), y + 35.0f * sin(direction), 0.0f, 1.0f,              1.0f, 1.0f, 1.0f,
+    };
+    vbo = new VBO(vertices, sizeof(vertices));
+    vao->addBuffer(*vbo);
+}

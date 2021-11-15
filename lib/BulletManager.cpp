@@ -13,13 +13,17 @@ BulletManager::~BulletManager(){
 }
 
 void BulletManager::update(){
-    for(int i = 0; i < bullets.size(); i++){
-        if(bullets[i]->update());
+    if(bullets.empty())
+        return;
+    for(Bullet *bullet : bullets){
+        bullet->update();
     }
 }
 void BulletManager::draw(){
-    for (int i = 0; i < bullets.size(); i++){
-        bullets[i]->draw();
+    if(bullets.empty())
+        return;
+    for(Bullet *bullet : bullets){
+        bullet->draw();
     }
 }
 
@@ -34,9 +38,9 @@ void BulletManager::removeAllBullets(){
     bullets.clear(); 
 }
 
-void BulletManager::shoot(float position, float direction){
-    Bullet* bullet = new Bullet(position, 135.0f, 0.1f, direction, bulletVAO, bulletShader);
+void BulletManager::shoot(float position, float direction, VAO *vao, Shader *shader){
+    Bullet* bullet = new Bullet(position, 135.0f, 0.1f, direction, vao, shader);
     addBullet(bullet);
     VBO bulletVBO = bullet->getVBO();
-    bulletVAO->addBuffer(bulletVBO);
+    vao->addBuffer(bulletVBO);
 }

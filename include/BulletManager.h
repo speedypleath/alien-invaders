@@ -21,7 +21,7 @@ public:
     void removeBullet(int bullet);
     void removeAllBullets();
     void shoot(float position, float direction);
+    void shoot(float position, float direction, VAO *vao, Shader *shader);
 
-
-    inline std::vector<Bullet*> GetBullets(){ return bullets; }
+    inline std::vector<Bullet*> getBullets(){ return bullets; }
 };

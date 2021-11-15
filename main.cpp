@@ -21,13 +21,16 @@ Player *player;
 Bullet *bullet;
 Shader *bulletShader;
 VAO *bulletVAO;
-// BulletManager *bulletManager;
+BulletManager *bulletManager;
 
 void ProcessNormalKeys(unsigned char key, int x, int y)
 {
-    // if(key == ' ')
-    //     bulletManager->shoot(player->getPosition(), player->getRotation());
-    // else
+    if(key == ' '){
+        bullet->setDirection(PI/2 + player->getRotation());
+        bullet->setX(player->getPosition());
+        bulletManager->addBullet(bullet);
+    }
+    else
         player->rotate(key);
 }
 void ProcessSpecialKeys(int key, int x, int y) {
@@ -39,21 +42,20 @@ void Initialize(void)
     player = new Player();
     bulletShader = new Shader("res/simple_shader.vert", "res/simple_shader.frag");
     bulletVAO = new VAO();
-    bullet = new Bullet(30, 30, 0.1, PI/2, bulletVAO, bulletShader);
+    bullet = new Bullet(WIDTH, 50.0f, 0.1, PI/2, bulletVAO, bulletShader);
     VBO bulletVBO = bullet->getVBO();
     bulletVAO->addBuffer(bulletVBO);
+    bulletManager = new BulletManager();
     player->draw();
-    // bulletManager->draw();
+    bulletManager->draw();
 }
 
 void Render(void)
 {
     GLCall(glClear(GL_COLOR_BUFFER_BIT));
     player->draw();
-    bullet->draw();
-    bullet->update();
-    // bulletManager->draw();
-    // bulletManager->update();
+    bulletManager->draw();
+    bulletManager->update();
     GLCall(glutSwapBuffers());
     GLCall(glFlush());
 }
