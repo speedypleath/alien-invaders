@@ -2,6 +2,7 @@
 #include <errorHandle.h>
 #include "glm/gtc/matrix_transform.hpp"
 #include <math.h>
+#include <iostream>
 
 Bullet::Bullet(GLfloat x, GLfloat y, float speed, float direction, VAO *vao, Shader *shader) : x(x), y(y), speed(speed), direction(direction), shader(shader), vao(vao) {
     GLfloat vertices [] = {
@@ -27,17 +28,18 @@ void Bullet::draw(){
     glm::mat4 resizeMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.f/WIDTH, 1.f/HEIGHT, 1.0));
     glm::mat4 translateMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-WIDTH, -HEIGHT, 0.0));
     glm::mat4 moveMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0));
-    glm::mat4 myMatrix =  resizeMatrix * translateMatrix * moveMatrix;
+    glm::mat4 myMatrix =  resizeMatrix * translateMatrix;
     shader->setMat4("myMatrix", myMatrix);
+    shader->setMat4("moveMatrix", moveMatrix);
     GLCall(glLineWidth(5.0f));
     GLCall(glDrawElements(GL_LINE_STRIP, 2, GL_UNSIGNED_INT, (void*)(0)));
 }
 
 bool Bullet::update(){
-    if (x < 0 || x > 2 * WIDTH) {
+    if (x > 2 * WIDTH) {
         return false;
     }
-    if (y < 0 || y > 2 * HEIGHT) {
+    if (y > 2 * HEIGHT) {
         return false;
     }
     x += 0.1 * cos(direction);
@@ -55,6 +57,7 @@ void Bullet::setDirection(float direction){
     vao->bind();
     shader->bind();
     ibo->bind();
+    std::cout<< "direction: " << direction << " x:" << x << " y:" << y << std::endl;
     delete vbo;
     GLfloat vertices [] = {
         x,  y, 0.0f, 1.0f,                                                               1.0f, 1.0f, 1.0f,

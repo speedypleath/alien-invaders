@@ -1,13 +1,13 @@
 #include <BulletManager.h>
 #include <errorHandle.h>
-
+#include <iostream>
 BulletManager::BulletManager(){
     currentBullet = 0;
-    bulletShader = new Shader("res/simple_shader.vert", "res/simple_shader.frag");
+    bulletShader = new Shader("res/bullet_shader.vert", "res/simple_shader.frag");
     bulletVAO = new VAO();
     Bullet *bullet;
     for(int i = 0; i < 10; i++){
-        bullet = new Bullet(WIDTH, 50.0f, 0.1, PI/2, bulletVAO, bulletShader);
+        bullet = new Bullet(WIDTH * 2, 50.0f, 0.1, PI/2, bulletVAO, bulletShader);
         addBullet(bullet);
     }
 }
@@ -33,6 +33,7 @@ void BulletManager::addBullet(Bullet* bullet){
 }
 
 void BulletManager::shoot(float position, float direction){
+    std::cout<<"BulletManager::shoot()"<<currentBullet<<std::endl;
     while(bullets.at(currentBullet)->update()){
         currentBullet = (currentBullet + 1) % 10; 
     }

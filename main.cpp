@@ -22,11 +22,16 @@ Bullet *bullet;
 Shader *bulletShader;
 VAO *bulletVAO;
 BulletManager *bulletManager;
+float cooldown = 0.0f;
+
 
 void ProcessNormalKeys(unsigned char key, int x, int y)
 {
     if(key == ' '){
-        bulletManager->shoot(player->getPosition(), PI/2 + player->getRotation());
+        if(cooldown <= 0.0f){
+            bulletManager->shoot(player->getPosition(), PI/2 + player->getRotation());
+            cooldown = 40.0f;
+        }
     }
     else
         player->rotate(key);
@@ -44,7 +49,8 @@ void Initialize(void)
 }
 
 void Render(void)
-{
+{   
+    cooldown -= 0.01f;
     GLCall(glClear(GL_COLOR_BUFFER_BIT));
     player->draw();
     bulletManager->draw();
