@@ -15,7 +15,6 @@ private:
     IndexBuffer *ibo;
     glm::mat4 position;
     float x, rotation;
-    BulletManager *bullets;
 public:
     Player();
     ~Player();

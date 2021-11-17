@@ -19,7 +19,6 @@ public:
     void draw();
     void addBullet(Bullet *bullet);
     void shoot(float position, float direction);
-    void shoot(float position, float direction, VAO *vao, Shader *shader);
 
     inline std::vector<Bullet*> getBullets(){ return bullets; }
 };

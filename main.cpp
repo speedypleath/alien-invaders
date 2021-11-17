@@ -18,16 +18,15 @@
 
 using namespace std;
 Player *player;
-Bullet *bullet;
-Shader *bulletShader;
-VAO *bulletVAO;
 BulletManager *bulletManager;
 float cooldown = 0.0f;
 
 
-void ProcessNormalKeys(unsigned char key, int x, int y)
+void processNormalKeys(unsigned char key, int x, int y)
 {
-    if(key == ' '){
+    if (key == 27)
+        exit(0);
+    if (key == ' '){
         if(cooldown <= 0.0f){
             bulletManager->shoot(player->getPosition(), PI/2 + player->getRotation());
             cooldown = 40.0f;
@@ -36,11 +35,11 @@ void ProcessNormalKeys(unsigned char key, int x, int y)
     else
         player->rotate(key);
 }
-void ProcessSpecialKeys(int key, int x, int y) {
+void processSpecialKeys(int key, int x, int y) {
     player->move(key);
 }
  
-void Initialize(void)
+void initialize(void)
 {
     player = new Player();
     bulletManager = new BulletManager();
@@ -48,7 +47,7 @@ void Initialize(void)
     bulletManager->draw();
 }
 
-void Render(void)
+void render(void)
 {   
     cooldown -= 0.01f;
     GLCall(glClear(GL_COLOR_BUFFER_BIT));
@@ -58,9 +57,10 @@ void Render(void)
     GLCall(glutSwapBuffers());
     GLCall(glFlush());
 }
-void Cleanup(void)
+void cleanup(void)
 {
     delete player;
+    delete bulletManager;
 }
 
 int main(int argc, char* argv[])
@@ -71,12 +71,12 @@ int main(int argc, char* argv[])
     GLCall(glutInitWindowSize(1000,700)); 
     GLCall(glutCreateWindow("Alien Invaders")); 
     GLCall(glewInit()); 
-    Initialize();
-    GLCall(glutDisplayFunc(Render));
-    GLCall(glutIdleFunc(Render));
-    GLCall(glutKeyboardFunc(ProcessNormalKeys));
-    GLCall(glutSpecialFunc(ProcessSpecialKeys));
-    GLCall(glutCloseFunc(Cleanup));
+    initialize();
+    GLCall(glutDisplayFunc(render));
+    GLCall(glutIdleFunc(render));
+    GLCall(glutKeyboardFunc(processNormalKeys));
+    GLCall(glutSpecialFunc(processSpecialKeys));
+    GLCall(glutCloseFunc(cleanup));
     GLCall(glutMainLoop());
     return 0;
 }

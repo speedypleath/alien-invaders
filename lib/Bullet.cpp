@@ -54,9 +54,6 @@ void Bullet::setPosition(GLfloat x){
 
 void Bullet::setDirection(float direction){
     this->direction = direction;
-    vao->bind();
-    shader->bind();
-    ibo->bind();
     std::cout<< "direction: " << direction << " x:" << x << " y:" << y << std::endl;
     delete vbo;
     GLfloat vertices [] = {

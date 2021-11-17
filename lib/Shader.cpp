@@ -96,12 +96,12 @@ Shader::Shader(const char *vertex_path, const char *fragment_path) : program(0) 
 Shader::~Shader(){
     GLCall(glDeleteProgram(program));
 }
-void Shader::setInt(const std::string &name, int value) const {
-    unsigned int location = glGetUniformLocation(program, name.c_str());
+void Shader::setInt(const char *name, int value) const {
+    unsigned int location = glGetUniformLocation(program, name);
     GLCall(glUniform1i(location, value));
 }
-void Shader::setFloat(const std::string &name, float value) const {
-    unsigned int location = glGetUniformLocation(program, name.c_str());
+void Shader::setFloat(const char *name, float value) const {
+    unsigned int location = glGetUniformLocation(program, name);
     GLCall(glUniform1f(location, value));
 }
 void Shader::setMat4(const char *name, glm::mat4 value) const {

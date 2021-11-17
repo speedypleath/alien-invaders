@@ -4,7 +4,6 @@
 #include <GL/freeglut.h>
 #include <iostream>
 #include <errorHandle.h>
-#include <Bullet.h>
 
 using namespace std;
 
@@ -93,6 +92,4 @@ void Player::rotate(unsigned char key){
             cout<<"rotation: "<<rotation<<endl;
             break;
 	}
-    if (key == 27)
-        exit(0);
 }
